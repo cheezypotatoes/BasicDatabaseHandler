@@ -88,7 +88,112 @@ public class database_manager {
         }
     }
 
-    public Object[][] GetAllData(){
+    public void InsertNewBook(String title, String description, String imageLink, String genre, int authorId,
+                              boolean availability,
+                              double bookPrice,
+                              int bookSold){
+        try (Connection connection = DriverManager.getConnection(this.data_location)) {
+            // SQL statement to insert data into the "book_details" table
+            String insertBookDetailsSQL = "INSERT INTO book_details (title, description, image_link, genre, author_id, availability, book_price, book_sold) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(insertBookDetailsSQL)) {
+                // Set values for the parameters in the prepared statement
+                preparedStatement.setString(1, title);
+                preparedStatement.setString(2, description);
+                preparedStatement.setString(3, imageLink);
+                preparedStatement.setString(4, genre);
+                preparedStatement.setInt(5, authorId);
+                preparedStatement.setBoolean(6, availability);
+                preparedStatement.setDouble(7, bookPrice);
+                preparedStatement.setInt(8, bookSold);
+
+                // Execute the SQL statement to insert data
+                preparedStatement.executeUpdate();
+
+                System.out.println("Data inserted into book_details table successfully");
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void ShowAllBook(){
+        try (Connection connection = DriverManager.getConnection(this.data_location)) {
+            // SQL statement to retrieve all data from the "book_details" table
+            String retrieveBooksSQL = "SELECT * FROM book_details;";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(retrieveBooksSQL)) {
+                // Execute the SQL statement and get the result set
+                ResultSet resultSet = preparedStatement.executeQuery();
+
+                // Iterate through the result set and print the book details
+                while (resultSet.next()) {
+                    int bookId = resultSet.getInt("book_id");
+                    String title = resultSet.getString("title");
+                    String description = resultSet.getString("description");
+                    String imageLink = resultSet.getString("image_link");
+                    String genre = resultSet.getString("genre");
+                    int authorId = resultSet.getInt("author_id");
+                    boolean availability = resultSet.getBoolean("availability");
+                    double bookPrice = resultSet.getDouble("book_price");
+                    int bookSold = resultSet.getInt("book_sold");
+
+                    // Print or process the retrieved book details as needed
+                    System.out.println("Book ID: " + bookId);
+                    System.out.println("Title: " + title);
+                    System.out.println("Description: " + description);
+                    System.out.println("Image Link: " + imageLink);
+                    System.out.println("Genre: " + genre);
+                    System.out.println("Author ID: " + authorId);
+                    System.out.println("Availability: " + availability);
+                    System.out.println("Book Price: " + bookPrice);
+                    System.out.println("Books Sold: " + bookSold);
+                    System.out.println();
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String ReturnBookDescription(int bookId){
+        StringBuilder description = new StringBuilder();
+
+        try (Connection connection = DriverManager.getConnection(this.data_location)) {
+            // SQL statement to retrieve description for a specific book from the "book_details" table
+            String retrieveDescriptionSQL = "SELECT description FROM book_details WHERE book_id = ?;";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(retrieveDescriptionSQL)) {
+                // Set the book ID as a parameter in the prepared statement
+                preparedStatement.setInt(1, bookId);
+
+                // Execute the SQL statement and get the result set
+                ResultSet resultSet = preparedStatement.executeQuery();
+
+                // Process the result set and append description to the StringBuilder
+                while (resultSet.next()) {
+                    description.append(resultSet.getString("description"));
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return description.toString();}
+
+    public Object[][] SeeAllUserData(){
         List<Object[]> dataList = new ArrayList<>();
 
         try (Connection connection = DriverManager.getConnection(this.data_location)) {
