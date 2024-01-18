@@ -30,6 +30,7 @@ public class main {
 
         // Returns the detail of the book
         String book_details = database.ReturnBookDescription(3);
+        System.out.println(book_details);
 
     }
 }
