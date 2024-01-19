@@ -1,5 +1,7 @@
 package org.example;
 
+import java.util.List;
+
 public class main {
     public static void main(String[] args) {
 
@@ -17,20 +19,22 @@ public class main {
         database.CreateTablesIfNoExist();
 
         // Insert User
-        database.InsertNewUser("Jorge", "My password", true, 1.40);
+        //database.InsertNewUser("Jorge", "My password", true, 1.40);
 
         // Returns 2D of user data
-        Object[][] all_data = database.SeeAllUserData();
+        //Object[][] all_data = database.SeeAllUserData();
 
         // Insert Book
-        database.InsertNewBook("Sample Book", "This is a sample book.", "sample.jpg", "Fiction", 1, true, 19.99, 0);
+        //database.InsertNewBook("Sample Book", "This is a sample book.", "sample.jpg", "Fiction", 1, true, 19.99, 0);
 
         // Show all books
-        database.ShowAllBook();
+        //database.ShowAllBook();
 
         // Returns the detail of the book
-        String book_details = database.ReturnBookDescription(3);
-        System.out.println(book_details);
+        List<Object> book_details = database.ReturnBookDetailsById(3);
+        for (Object detail : book_details) {
+            System.out.println(detail);
+        }
 
     }
 }

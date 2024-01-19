@@ -164,23 +164,26 @@ public class database_manager {
         }
     }
 
-    public String ReturnBookDescription(int bookId){
-        StringBuilder description = new StringBuilder();
+    public List<Object> ReturnBookDetailsById(int bookId){
+        List<Object> result = new ArrayList<>();
 
         try (Connection connection = DriverManager.getConnection(this.data_location)) {
-            // SQL statement to retrieve description for a specific book from the "book_details" table
-            String retrieveDescriptionSQL = "SELECT description FROM book_details WHERE book_id = ?;";
+            String retrieveDetailsSQL = "SELECT * FROM book_details WHERE book_id = ?;";
 
-            try (PreparedStatement preparedStatement = connection.prepareStatement(retrieveDescriptionSQL)) {
-                // Set the book ID as a parameter in the prepared statement
+            try (PreparedStatement preparedStatement = connection.prepareStatement(retrieveDetailsSQL)) {
                 preparedStatement.setInt(1, bookId);
 
-                // Execute the SQL statement and get the result set
                 ResultSet resultSet = preparedStatement.executeQuery();
 
-                // Process the result set and append description to the StringBuilder
                 while (resultSet.next()) {
-                    description.append(resultSet.getString("description"));
+                    result.add(resultSet.getString("title"));
+                    result.add(resultSet.getString("description"));
+                    result.add(resultSet.getString("image_link"));
+                    result.add(resultSet.getString("genre"));
+                    result.add(resultSet.getInt("author_id"));
+                    result.add(resultSet.getBoolean("availability"));
+                    result.add(resultSet.getDouble("book_price"));
+                    result.add(resultSet.getInt("book_sold"));
                 }
 
             } catch (SQLException e) {
@@ -191,7 +194,8 @@ public class database_manager {
             e.printStackTrace();
         }
 
-        return description.toString();}
+        return result;
+    }
 
     public Object[][] SeeAllUserData(){
         List<Object[]> dataList = new ArrayList<>();
