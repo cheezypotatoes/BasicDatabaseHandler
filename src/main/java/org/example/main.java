@@ -31,10 +31,14 @@ public class main {
         //database.ShowAllBook();
 
         // Returns the detail of the book
-        List<Object> book_details = database.ReturnBookDetailsById(3);
-        for (Object detail : book_details) {
-            System.out.println(detail);
-        }
+        //List<Object> book_details = database.ReturnBookDetailsById  (3);
+        //for (Object detail : book_details) {
+        //    System.out.println(detail);
+        //}
+
+        // Return the name of the author from userdata table
+        String author_name = database.ReturnAuthorNameById(1);
+        System.out.println(author_name);
 
     }
 }

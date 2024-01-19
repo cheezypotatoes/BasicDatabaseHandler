@@ -197,6 +197,36 @@ public class database_manager {
         return result;
     }
 
+    public String ReturnAuthorNameById(int user_id){
+
+        String authorName = "";
+
+        try (Connection connection = DriverManager.getConnection(this.data_location)) {
+            String retrieveDetailsSQL = "SELECT name FROM user_data WHERE id = ?;";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(retrieveDetailsSQL)) {
+                preparedStatement.setInt(1, user_id);
+
+                ResultSet resultSet = preparedStatement.executeQuery();
+
+                if (resultSet.next()) {
+                    authorName = resultSet.getString("name");
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return authorName;
+
+    }
+
+
+
     public Object[][] SeeAllUserData(){
         List<Object[]> dataList = new ArrayList<>();
 
