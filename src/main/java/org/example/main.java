@@ -2,6 +2,7 @@ package org.example;
 
 import java.util.List;
 
+@SuppressWarnings("ALL")
 public class main {
     public static void main(String[] args) {
 
@@ -25,7 +26,7 @@ public class main {
         //Object[][] all_data = database.SeeAllUserData();
 
         // Insert Book
-        //database.InsertNewBook("Sample Book", "This is a sample book.", "sample.jpg", "Fiction", 1, true, 19.99, 0);
+        //database.InsertNewBook("New Scary book_3 but with comedy", "This is a sample book.", "sample.jpg", "Comedy,Horror", 1, true, 19.99, 0);
 
         // Show all books
         //database.ShowAllBook();
@@ -36,9 +37,22 @@ public class main {
         //    System.out.println(detail);
         //}
 
+
         // Return the name of the author from userdata table
-        String author_name = database.ReturnAuthorNameById(1);
-        System.out.println(author_name);
+        //String author_name = database.ReturnAuthorNameById(1);
+        //System.out.println(author_name);
+
+
+        // Return book it by its genre
+        //String[] genres = {"Comedy"};
+        //List<String> result = database.ReturnIdByGenre(genres);
+
+        // Process the result
+        //for (String id : result) {
+            //System.out.println(id);
+        //}
+
+
 
     }
 }

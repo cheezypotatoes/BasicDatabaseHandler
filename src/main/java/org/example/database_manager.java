@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+@SuppressWarnings("ALL")
 public class database_manager {
 
     public String data_location;
@@ -261,4 +262,43 @@ public class database_manager {
         // Convert the list to a 2D array
         return dataList.toArray(new Object[0][0]);
     }
+
+    public List<String> ReturnIdByGenre(String[] genres) {
+        List<String> result = new ArrayList<>();
+        String query = "SELECT book_id FROM book_details WHERE " + buildCondition(genres);
+
+        try (Connection connection = DriverManager.getConnection(data_location);
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                int bookId = resultSet.getInt("book_id");
+                result.add(String.valueOf(bookId));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
+    public String buildCondition(String[] genres){
+        StringBuilder condition = new StringBuilder();
+
+        for (String genre : genres) {
+            condition.append("genre LIKE '%").append(genre).append("%' OR ");
+        }
+
+        if (condition.length() > 0) {
+            // Remove the last " OR "
+            condition.setLength(condition.length() - 4);
+        }
+
+        return condition.toString();
+
+    }
+
+
 }
