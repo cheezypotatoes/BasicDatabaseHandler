@@ -26,7 +26,11 @@ public class main {
         //Object[][] all_data = database.SeeAllUserData();
 
         // Insert Book
-        //database.InsertNewBook("New Scary book_3 but with comedy", "This is a sample book.", "sample.jpg", "Comedy,Horror", 1, true, 19.99, 0);
+        //database.InsertNewBook("New Scary book_3 but with comedy", "sample.jpg", "Comedy,Horror", 1, true, 19.99, 0, "description test 2");
+
+        // Return book description
+        String desc = database.returnBookDescription(2);
+        System.out.println(desc);
 
         // Show all books
         //database.ShowAllBook();

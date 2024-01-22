@@ -31,7 +31,6 @@ public class database_manager {
             String createBookDetailsTableSQL = "CREATE TABLE IF NOT EXISTS book_details ("
                     + "book_id INTEGER PRIMARY KEY AUTOINCREMENT,"
                     + "title TEXT NOT NULL,"
-                    + "description TEXT,"
                     + "image_link TEXT,"
                     + "genre TEXT,"
                     + "author_id INTEGER,"
@@ -40,6 +39,12 @@ public class database_manager {
                     + "book_sold INTEGER DEFAULT 0,"
                     + "FOREIGN KEY (author_id) REFERENCES user_data (id)"
                     + ");";
+
+            String createBookDescriptionSQL = "CREATE TABLE IF NOT EXISTS book_description ("
+                    + "description_id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                    + "description TEXT"
+                    + ");";
+
 
             String createAuthorTableSQL = "CREATE TABLE IF NOT EXISTS author ("
                     + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -53,6 +58,7 @@ public class database_manager {
 
             // Execute the SQL statement
             statement.execute(createTableSQL);
+            statement.execute(createBookDescriptionSQL);
             statement.execute(createBookDetailsTableSQL);
             statement.execute(createAuthorTableSQL);
 
@@ -89,29 +95,31 @@ public class database_manager {
         }
     }
 
-    public void InsertNewBook(String title, String description, String imageLink, String genre, int authorId,
+    public void InsertNewBook(String title, String imageLink, String genre, int authorId,
                               boolean availability,
                               double bookPrice,
-                              int bookSold){
+                              int bookSold,
+                              String description){
         try (Connection connection = DriverManager.getConnection(this.data_location)) {
             // SQL statement to insert data into the "book_details" table
-            String insertBookDetailsSQL = "INSERT INTO book_details (title, description, image_link, genre, author_id, availability, book_price, book_sold) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+            String insertBookDetailsSQL = "INSERT INTO book_details (title, image_link, genre, author_id, availability, book_price, book_sold) VALUES (?, ?, ?, ?, ?, ?, ?);";
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(insertBookDetailsSQL)) {
                 // Set values for the parameters in the prepared statement
                 preparedStatement.setString(1, title);
-                preparedStatement.setString(2, description);
-                preparedStatement.setString(3, imageLink);
-                preparedStatement.setString(4, genre);
-                preparedStatement.setInt(5, authorId);
-                preparedStatement.setBoolean(6, availability);
-                preparedStatement.setDouble(7, bookPrice);
-                preparedStatement.setInt(8, bookSold);
+                preparedStatement.setString(2, imageLink);
+                preparedStatement.setString(3, genre);
+                preparedStatement.setInt(4, authorId);
+                preparedStatement.setBoolean(5, availability);
+                preparedStatement.setDouble(6, bookPrice);
+                preparedStatement.setInt(7, bookSold);
 
                 // Execute the SQL statement to insert data
                 preparedStatement.executeUpdate();
 
                 System.out.println("Data inserted into book_details table successfully");
+
+                InsertNewDescription(description);
 
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -120,6 +128,30 @@ public class database_manager {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public void InsertNewDescription(String description){
+        try (Connection connection = DriverManager.getConnection(this.data_location)) {
+            // SQL statement to insert data into the "book_details" table
+            String insertBookDetailsSQL = "INSERT INTO book_description (description) VALUES (?);";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(insertBookDetailsSQL)) {
+                // Set values for the parameters in the prepared statement
+                preparedStatement.setString(1, description);
+
+                // Execute the SQL statement to insert data
+                preparedStatement.executeUpdate();
+
+                System.out.println("Data inserted into book_description table successfully");
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void ShowAllBook(){
@@ -163,6 +195,34 @@ public class database_manager {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+
+    public String returnBookDescription(int bookId) {
+        String result = null;
+
+        try (Connection connection = DriverManager.getConnection(this.data_location)) {
+            String retrieveDetailsSQL = "SELECT * FROM book_description WHERE description_id = ?;";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(retrieveDetailsSQL)) {
+                preparedStatement.setInt(1, bookId);
+
+                ResultSet resultSet = preparedStatement.executeQuery();
+
+                if (resultSet.next()) {
+                    // Assuming 'description' is the column name in your table
+                    result = resultSet.getString("description");
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return result;
     }
 
     public List<Object> ReturnBookDetailsById(int bookId){
