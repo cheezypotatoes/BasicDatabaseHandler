@@ -67,6 +67,13 @@ public class main {
         }
 
 
+        String[] booksBought = database.ReturnBooksBoughtById(1);
+
+        for (int i = 0; i < booksBought.length; i++){
+            System.out.printf("books #%d = %s\n", i, booksBought[i]);
+        }
+
+
 
 
 

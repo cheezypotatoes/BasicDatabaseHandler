@@ -158,7 +158,7 @@ public class database_manager {
         }
 
     }
-
+    // Buy new Book
     public boolean BuyBook(double cost, int user_id, int book_id){
         String updateQuery = "UPDATE user_data SET balance = ?, books_bought = ? WHERE id = ?";
 
@@ -201,7 +201,6 @@ public class database_manager {
             e.printStackTrace();
         }
     }
-
     public void AddNewBoughtBook(int userId, String newBook) {
         try (Connection connection = DriverManager.getConnection(this.data_location)) {
             // SQL statement to update the books_bought for a user with a specific user_id
@@ -489,6 +488,44 @@ public class database_manager {
 
         return data;
     }
+
+
+    public String[] ReturnBooksBoughtById(int user_id) {
+        String[] booksArray;
+
+        try (Connection connection = DriverManager.getConnection(this.data_location)) {
+            String retrieveBooksBoughtSQL = "SELECT books_bought FROM user_data WHERE id = ?;";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(retrieveBooksBoughtSQL)) {
+                preparedStatement.setInt(1, user_id);
+
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        String booksBought = resultSet.getString("books_bought");
+                        if (booksBought != null) {
+                            // Split the books_bought string into an array
+                            booksArray = booksBought.startsWith(",") ? booksBought.substring(1).split(",") : booksBought.split(",");                        } else {
+                            // If books_bought is null, initialize an empty array
+                            booksArray = new String[0];
+                        }
+                    } else {
+                        System.out.println("No user found with ID " + user_id);
+                        return new String[0]; // Return an empty array if no user found
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            // Handle SQLException
+            e.printStackTrace();
+            return new String[0]; // Return an empty array in case of an exception
+        }
+
+        return booksArray;
+    }
+
+
+
+
 
 
 
