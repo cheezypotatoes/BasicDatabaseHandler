@@ -24,12 +24,14 @@ public class database_manager {
              Statement statement = connection.createStatement()) {
 
             // SQL statement to create a table if it does not exist
-            String createTableSQL = "CREATE TABLE IF NOT EXISTS user_data ("
+            String CreateUserDataSQL = "CREATE TABLE IF NOT EXISTS user_data ("
                     + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                    + "name TEXT NOT NULL,"
+                    + "email TEXT NOT NULL,"
+                    + "username NOT NULL,"
                     + "password TEXT NOT NULL,"
                     + "admin BOOLEAN DEFAULT 0,"
-                    + "balance REAL DEFAULT 0.0"
+                    + "balance REAL DEFAULT 0.0,"
+                    + "books_bought TEXT"
                     + ");";
 
             String createBookDetailsTableSQL = "CREATE TABLE IF NOT EXISTS book_details ("
@@ -54,14 +56,12 @@ public class database_manager {
                     + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
                     + "user_id INTEGER,"
                     + "description TEXT,"
-                    + "book_pending TEXT,"
-                    + "book_published TEXT,"
                     + "FOREIGN KEY (user_id) REFERENCES user_data (id)"
                     + ");";
 
 
             // Execute the SQL statement
-            statement.execute(createTableSQL);
+            statement.execute(CreateUserDataSQL);
             statement.execute(createBookDescriptionSQL);
             statement.execute(createBookDetailsTableSQL);
             statement.execute(createAuthorTableSQL);
@@ -77,25 +77,24 @@ public class database_manager {
 
     //-------------Insert-------------//
     // inesrt new user
-    public void InsertNewUser(String name, String password, Boolean isAdmin, double balance){
+    public void InsertNewUser(String email, String username, String password, Boolean isAdmin, double balance, String booksBought) {
         try (Connection connection = DriverManager.getConnection(this.data_location)) {
             // SQL statement to insert data into the "user_data" table
-            String insertUserDataSQL = "INSERT INTO user_data (name, password, admin, balance) VALUES (?, ?, ?, ?);";
+            String insertUserDataSQL = "INSERT INTO user_data (email, username, password, admin, balance, books_bought) VALUES (?, ?, ?, ?, ?, ?);";
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(insertUserDataSQL)) {
                 // Set values for the parameters in the prepared statement
-                preparedStatement.setString(1, name);
-                preparedStatement.setString(2, password);
-                preparedStatement.setBoolean(3, isAdmin);
-                preparedStatement.setDouble(4, balance);
+                preparedStatement.setString(1, email); // Assuming email is the first parameter
+                preparedStatement.setString(2, username); // Assuming username is the second parameter
+                preparedStatement.setString(3, password);
+                preparedStatement.setBoolean(4, isAdmin);
+                preparedStatement.setDouble(5, balance);
+                preparedStatement.setString(6, booksBought); // Assuming booksBought is the sixth parameter
 
                 // Execute the SQL statement to insert data
                 preparedStatement.executeUpdate();
 
                 System.out.println("Data inserted into user_data table successfully");
-
-            } catch (SQLException e) {
-                e.printStackTrace();
             }
 
         } catch (SQLException e) {
@@ -160,6 +159,91 @@ public class database_manager {
 
     }
 
+    public boolean BuyBook(double cost, int user_id, int book_id){
+        String updateQuery = "UPDATE user_data SET balance = ?, books_bought = ? WHERE id = ?";
+
+        String[] data = ReturnUserDetailsById(user_id);
+        Double balance = Double.valueOf(data[4]);
+
+        if ((balance - cost) < 0) {
+            System.out.println("Not Enough");
+            return false;
+        } else {
+            System.out.println("Successfully bought");
+            // Updates User's cash
+            UpdateUserCash(Integer.valueOf(data[0]), (balance - cost));
+            AddNewBoughtBook(Integer.valueOf(data[0]), String.valueOf(book_id));
+            return true;
+        }
+
+
+    }
+
+
+
+    //-------------Specific Update-------------//
+    public void UpdateUserCash(int user_id, double updated_balance){
+        try (Connection connection = DriverManager.getConnection(this.data_location)) {
+            // SQL statement to update the balance for a user with a specific user_id
+            String updateBalanceSQL = "UPDATE user_data SET balance = ? WHERE id = ?;";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(updateBalanceSQL)) {
+                // Set values for the parameters in the prepared statement
+                preparedStatement.setDouble(1, updated_balance);
+                preparedStatement.setInt(2, user_id);
+
+                // Execute the SQL statement to update the balance
+                int rowsAffected = preparedStatement.executeUpdate();
+
+            }
+        } catch (SQLException e) {
+            // Handle SQLException
+            e.printStackTrace();
+        }
+    }
+
+    public void AddNewBoughtBook(int userId, String newBook) {
+        try (Connection connection = DriverManager.getConnection(this.data_location)) {
+            // SQL statement to update the books_bought for a user with a specific user_id
+            String getBooksBoughtSQL = "SELECT books_bought FROM user_data WHERE id = ?;";
+            String updateBooksBoughtSQL = "UPDATE user_data SET books_bought = ? WHERE id = ?;";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(getBooksBoughtSQL)) {
+                // Retrieve the current books_bought value
+                preparedStatement.setInt(1, userId);
+                ResultSet resultSet = preparedStatement.executeQuery();
+
+                if (resultSet.next()) {
+                    String currentBooksBought = resultSet.getString("books_bought");
+                    String updatedBooksBought = currentBooksBought + "," + newBook;
+
+                    try (PreparedStatement updateStatement = connection.prepareStatement(updateBooksBoughtSQL)) {
+                        // Set values for the parameters in the prepared statement
+                        updateStatement.setString(1, updatedBooksBought);
+                        updateStatement.setInt(2, userId);
+
+                        // Execute the SQL statement to update books_bought
+                        int rowsAffected = updateStatement.executeUpdate();
+
+                        if (rowsAffected > 0) {
+                            System.out.println("New book added successfully for user with ID: " + userId);
+                        } else {
+                            System.out.println("No user found with ID: " + userId);
+                        }
+                    }
+                } else {
+                    System.out.println("No user found with ID: " + userId);
+                }
+            }
+        } catch (SQLException e) {
+            // Handle SQLException
+            e.printStackTrace();
+        }
+    }
+
+
+
+
 
 
     //-------------RETURN ALL-------------//
@@ -221,13 +305,15 @@ public class database_manager {
                 // Iterate through the result set and add data to the list
                 while (resultSet.next()) {
                     int id = resultSet.getInt("id");
-                    String name = resultSet.getString("name");
+                    String email = resultSet.getString("email");
+                    String username = resultSet.getString("username");
                     String password = resultSet.getString("password");
                     boolean isAdmin = resultSet.getBoolean("admin");
                     double balance = resultSet.getDouble("balance");
+                    String booksBought = resultSet.getString("books_bought");
 
                     // Add the retrieved data to the list
-                    dataList.add(new Object[]{id, name, password, isAdmin, balance});
+                    dataList.add(new Object[]{id, email, username, password, isAdmin, balance, booksBought});
                 }
 
             } catch (SQLException e) {
@@ -241,6 +327,7 @@ public class database_manager {
         // Convert the list to a 2D array
         return dataList.toArray(new Object[0][0]);
     }
+
 
 
 
@@ -312,7 +399,7 @@ public class database_manager {
         String authorName = "";
 
         try (Connection connection = DriverManager.getConnection(this.data_location)) {
-            String retrieveDetailsSQL = "SELECT name FROM user_data WHERE id = ?;";
+            String retrieveDetailsSQL = "SELECT username FROM user_data WHERE id = ?;";
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(retrieveDetailsSQL)) {
                 preparedStatement.setInt(1, user_id);
@@ -320,7 +407,7 @@ public class database_manager {
                 ResultSet resultSet = preparedStatement.executeQuery();
 
                 if (resultSet.next()) {
-                    authorName = resultSet.getString("name");
+                    authorName = resultSet.getString("username");
                 }
 
             } catch (SQLException e) {
@@ -371,6 +458,38 @@ public class database_manager {
         return condition.toString();
 
     }
+    // Return Specific User Details By Id
+    public String[] ReturnUserDetailsById(int user_id) {
+        String[] data = new String[7]; // Adjust if adding/removing column
+
+        try (Connection connection = DriverManager.getConnection(this.data_location)) {
+            String retrieveDetailsSQL = "SELECT * FROM user_data WHERE id = ?;";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(retrieveDetailsSQL)) {
+                preparedStatement.setInt(1, user_id);
+
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        data[0] = String.valueOf(resultSet.getInt("id"));
+                        data[1] = resultSet.getString("email");
+                        data[2] = resultSet.getString("user_name");
+                        data[3] = resultSet.getString("password");
+                        data[4] = String.valueOf(resultSet.getBoolean("admin"));
+                        data[5] = String.valueOf(resultSet.getDouble("balance"));
+                        data[6] = resultSet.getString("books_bought");
+                    } else {
+                        System.out.println("No user found with ID " + user_id);
+                    }
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return data;
+    }
+
 
 
 }

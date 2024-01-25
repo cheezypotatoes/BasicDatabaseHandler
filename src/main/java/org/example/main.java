@@ -1,6 +1,5 @@
 package org.example;
 
-import java.util.List;
 
 @SuppressWarnings("ALL")
 public class main {
@@ -20,7 +19,7 @@ public class main {
         database.CreateTablesIfNoExist();
 
         // Insert User
-        //database.InsertNewUser("Jorge", "My password", true, 1.40);
+        //database.InsertNewUser("jorge@example.com", "Jorge", "My password", true, 500, "");
 
         // Returns 2D of user data
         //Object[][] all_data = database.SeeAllUserData();
@@ -55,6 +54,20 @@ public class main {
         //for (String id : result) {
             //System.out.println(id);
         //}
+
+
+        // Buy books
+        //database.BuyBook(150, 1, 555);
+
+        // Get specific data of user
+        String[] data = database.ReturnUserDetailsById(1);
+
+        for (int i = 0; i < data.length; i++){
+            System.out.println(data[i]);
+        }
+
+
+
 
 
 
