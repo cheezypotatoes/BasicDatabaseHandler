@@ -167,7 +167,7 @@ public class database_manager {
                 while (resultSet.next()) {
                     int bookId = resultSet.getInt("book_id");
                     String title = resultSet.getString("title");
-                    String description = resultSet.getString("description");
+                    String description = returnBookDescription(bookId);
                     String imageLink = resultSet.getString("image_link");
                     String genre = resultSet.getString("genre");
                     int authorId = resultSet.getInt("author_id");
@@ -237,8 +237,9 @@ public class database_manager {
                 ResultSet resultSet = preparedStatement.executeQuery();
 
                 while (resultSet.next()) {
+                    result.add(resultSet.getInt("book_id"));
                     result.add(resultSet.getString("title"));
-                    result.add(resultSet.getString("description"));
+                    result.add(returnBookDescription(resultSet.getInt("book_id")));
                     result.add(resultSet.getString("image_link"));
                     result.add(resultSet.getString("genre"));
                     result.add(resultSet.getInt("author_id"));
@@ -285,7 +286,6 @@ public class database_manager {
         return authorName;
 
     }
-
 
 
     public Object[][] SeeAllUserData(){

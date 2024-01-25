@@ -29,16 +29,16 @@ public class main {
         //database.InsertNewBook("New Scary book_3 but with comedy", "sample.jpg", "Comedy,Horror", 1, true, 19.99, 0, "description test 2");
 
         // Return book description
-        String desc = database.returnBookDescription(2);
-        System.out.println(desc);
+        //String desc = database.returnBookDescription(2);
+        //System.out.println(desc);
 
         // Show all books
         //database.ShowAllBook();
 
         // Returns the detail of the book
-        //List<Object> book_details = database.ReturnBookDetailsById  (3);
+        //List<Object> book_details = database.ReturnBookDetailsById  (2);
         //for (Object detail : book_details) {
-        //    System.out.println(detail);
+            //System.out.println(detail);
         //}
 
 
