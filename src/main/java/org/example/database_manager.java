@@ -10,10 +10,14 @@ public class database_manager {
 
     public String data_location;
 
+
+
+    //-------------Intialization-------------//
+    // Initialize databse Location
     public void init (String data_location) {
         this.data_location = data_location;
     }
-
+    // Create Tables
     public void CreateTablesIfNoExist(){
 
         try (Connection connection = DriverManager.getConnection(this.data_location);
@@ -69,6 +73,10 @@ public class database_manager {
 
     }
 
+
+
+    //-------------Insert-------------//
+    // inesrt new user
     public void InsertNewUser(String name, String password, Boolean isAdmin, double balance){
         try (Connection connection = DriverManager.getConnection(this.data_location)) {
             // SQL statement to insert data into the "user_data" table
@@ -94,12 +102,9 @@ public class database_manager {
             e.printStackTrace();
         }
     }
-
+    // Insert new book
     public void InsertNewBook(String title, String imageLink, String genre, int authorId,
-                              boolean availability,
-                              double bookPrice,
-                              int bookSold,
-                              String description){
+    boolean availability, double bookPrice, int bookSold, String description){
         try (Connection connection = DriverManager.getConnection(this.data_location)) {
             // SQL statement to insert data into the "book_details" table
             String insertBookDetailsSQL = "INSERT INTO book_details (title, image_link, genre, author_id, availability, book_price, book_sold) VALUES (?, ?, ?, ?, ?, ?, ?);";
@@ -119,6 +124,7 @@ public class database_manager {
 
                 System.out.println("Data inserted into book_details table successfully");
 
+                // Insert description to the description table
                 InsertNewDescription(description);
 
             } catch (SQLException e) {
@@ -129,7 +135,7 @@ public class database_manager {
             e.printStackTrace();
         }
     }
-
+    // Insert new details (Part of insert)
     public void InsertNewDescription(String description){
         try (Connection connection = DriverManager.getConnection(this.data_location)) {
             // SQL statement to insert data into the "book_details" table
@@ -154,7 +160,11 @@ public class database_manager {
 
     }
 
-    public void ShowAllBook(){
+
+
+    //-------------RETURN ALL-------------//
+    // Return all book data
+    public void ReturnAllBooks(){
         try (Connection connection = DriverManager.getConnection(this.data_location)) {
             // SQL statement to retrieve all data from the "book_details" table
             String retrieveBooksSQL = "SELECT * FROM book_details;";
@@ -167,7 +177,7 @@ public class database_manager {
                 while (resultSet.next()) {
                     int bookId = resultSet.getInt("book_id");
                     String title = resultSet.getString("title");
-                    String description = returnBookDescription(bookId);
+                    String description = returnBookDescriptionById(bookId);
                     String imageLink = resultSet.getString("image_link");
                     String genre = resultSet.getString("genre");
                     int authorId = resultSet.getInt("author_id");
@@ -196,99 +206,8 @@ public class database_manager {
             e.printStackTrace();
         }
     }
-
-
-    public String returnBookDescription(int bookId) {
-        String result = null;
-
-        try (Connection connection = DriverManager.getConnection(this.data_location)) {
-            String retrieveDetailsSQL = "SELECT * FROM book_description WHERE description_id = ?;";
-
-            try (PreparedStatement preparedStatement = connection.prepareStatement(retrieveDetailsSQL)) {
-                preparedStatement.setInt(1, bookId);
-
-                ResultSet resultSet = preparedStatement.executeQuery();
-
-                if (resultSet.next()) {
-                    // Assuming 'description' is the column name in your table
-                    result = resultSet.getString("description");
-                }
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return result;
-    }
-
-    public List<Object> ReturnBookDetailsById(int bookId){
-        List<Object> result = new ArrayList<>();
-
-        try (Connection connection = DriverManager.getConnection(this.data_location)) {
-            String retrieveDetailsSQL = "SELECT * FROM book_details WHERE book_id = ?;";
-
-            try (PreparedStatement preparedStatement = connection.prepareStatement(retrieveDetailsSQL)) {
-                preparedStatement.setInt(1, bookId);
-
-                ResultSet resultSet = preparedStatement.executeQuery();
-
-                while (resultSet.next()) {
-                    result.add(resultSet.getInt("book_id"));
-                    result.add(resultSet.getString("title"));
-                    result.add(returnBookDescription(resultSet.getInt("book_id")));
-                    result.add(resultSet.getString("image_link"));
-                    result.add(resultSet.getString("genre"));
-                    result.add(resultSet.getInt("author_id"));
-                    result.add(resultSet.getBoolean("availability"));
-                    result.add(resultSet.getDouble("book_price"));
-                    result.add(resultSet.getInt("book_sold"));
-                }
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return result;
-    }
-
-    public String ReturnAuthorNameById(int user_id){
-
-        String authorName = "";
-
-        try (Connection connection = DriverManager.getConnection(this.data_location)) {
-            String retrieveDetailsSQL = "SELECT name FROM user_data WHERE id = ?;";
-
-            try (PreparedStatement preparedStatement = connection.prepareStatement(retrieveDetailsSQL)) {
-                preparedStatement.setInt(1, user_id);
-
-                ResultSet resultSet = preparedStatement.executeQuery();
-
-                if (resultSet.next()) {
-                    authorName = resultSet.getString("name");
-                }
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return authorName;
-
-    }
-
-
-    public Object[][] SeeAllUserData(){
+    // Return all User data
+    public Object[][] ReturnAllUsers(){
         List<Object[]> dataList = new ArrayList<>();
 
         try (Connection connection = DriverManager.getConnection(this.data_location)) {
@@ -323,7 +242,100 @@ public class database_manager {
         return dataList.toArray(new Object[0][0]);
     }
 
-    public List<String> ReturnIdByGenre(String[] genres) {
+
+
+    //-------------Specific Return-------------//
+    // Return Specific Book Details
+    public List<Object> ReturnBookDetailsById(int bookId){
+        List<Object> result = new ArrayList<>();
+
+        try (Connection connection = DriverManager.getConnection(this.data_location)) {
+            String retrieveDetailsSQL = "SELECT * FROM book_details WHERE book_id = ?;";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(retrieveDetailsSQL)) {
+                preparedStatement.setInt(1, bookId);
+
+                ResultSet resultSet = preparedStatement.executeQuery();
+
+                while (resultSet.next()) {
+                    result.add(resultSet.getInt("book_id"));
+                    result.add(resultSet.getString("title"));
+                    result.add(returnBookDescriptionById(resultSet.getInt("book_id")));
+                    result.add(resultSet.getString("image_link"));
+                    result.add(resultSet.getString("genre"));
+                    result.add(resultSet.getInt("author_id"));
+                    result.add(resultSet.getBoolean("availability"));
+                    result.add(resultSet.getDouble("book_price"));
+                    result.add(resultSet.getInt("book_sold"));
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+    // Return Specific Book Description (Part of ReturnBookDetailsById but can be used for more stuff)
+    public String returnBookDescriptionById(int bookId) {
+        String result = null;
+
+        try (Connection connection = DriverManager.getConnection(this.data_location)) {
+            String retrieveDetailsSQL = "SELECT * FROM book_description WHERE description_id = ?;";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(retrieveDetailsSQL)) {
+                preparedStatement.setInt(1, bookId);
+
+                ResultSet resultSet = preparedStatement.executeQuery();
+
+                if (resultSet.next()) {
+                    // Assuming 'description' is the column name in your table
+                    result = resultSet.getString("description");
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+    // Return Specific Author name
+    public String ReturnAuthorNameById(int user_id){
+
+        String authorName = "";
+
+        try (Connection connection = DriverManager.getConnection(this.data_location)) {
+            String retrieveDetailsSQL = "SELECT name FROM user_data WHERE id = ?;";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(retrieveDetailsSQL)) {
+                preparedStatement.setInt(1, user_id);
+
+                ResultSet resultSet = preparedStatement.executeQuery();
+
+                if (resultSet.next()) {
+                    authorName = resultSet.getString("name");
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return authorName;
+
+    }
+    // Return Specific Book Id By Genre
+    public List<String> ReturnBookIdByGenre(String[] genres) {
         List<String> result = new ArrayList<>();
         String query = "SELECT book_id FROM book_details WHERE " + buildCondition(genres);
 
@@ -343,7 +355,7 @@ public class database_manager {
 
         return result;
     }
-
+    // Part of ReturnBookIdByGenre
     public String buildCondition(String[] genres){
         StringBuilder condition = new StringBuilder();
 
