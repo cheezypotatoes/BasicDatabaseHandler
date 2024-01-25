@@ -182,6 +182,7 @@ public class database_manager {
 
 
     //-------------Specific Update-------------//
+    // Updates The User's Cash
     public void UpdateUserCash(int user_id, double updated_balance){
         try (Connection connection = DriverManager.getConnection(this.data_location)) {
             // SQL statement to update the balance for a user with a specific user_id
@@ -201,6 +202,7 @@ public class database_manager {
             e.printStackTrace();
         }
     }
+    // Add new Book
     public void AddNewBoughtBook(int userId, String newBook) {
         try (Connection connection = DriverManager.getConnection(this.data_location)) {
             // SQL statement to update the books_bought for a user with a specific user_id
