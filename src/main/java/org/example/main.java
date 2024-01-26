@@ -19,20 +19,20 @@ public class main {
         database.CreateTablesIfNoExist();
 
         // Insert User
-        //database.InsertNewUser("jorge@example.com", "Jorge", "My password", true, 500, "");
+        //database.InsertNewUser("jorge1@example.com", "Jorge", "My password", true, 5000, "");
 
         // Returns 2D of user data
         //Object[][] all_data = database.SeeAllUserData();
 
         // Insert Book
-        //database.InsertNewBook("New Scary book_3 but with comedy", "sample.jpg", "Comedy,Horror", 1, true, 19.99, 0, "description test 2");
+        //database.InsertNewBook("New Scary book_22232", "sample.jpg", "Comedy,Horror", 1, true, 19.99, 0, "description test 2");
 
         // Return book description
-        //String desc = database.returnBookDescription(2);
+        //String desc = database.returnBookDescriptionById(1);
         //System.out.println(desc);
 
         // Show all books
-        //database.ShowAllBook();
+        database.ReturnAllBooks();
 
         // Returns the detail of the book
         //List<Object> book_details = database.ReturnBookDetailsById  (2);
@@ -57,21 +57,33 @@ public class main {
 
 
         // Buy books
-        //database.BuyBook(150, 1, 555);
+        //database.BuyBook(150, 2, 3);
 
         // Get specific data of user
-        String[] data = database.ReturnUserDetailsById(1);
+        //String[] data = database.ReturnUserDetailsById(1);
 
-        for (int i = 0; i < data.length; i++){
-            System.out.println(data[i]);
+        //for (int i = 0; i < data.length; i++){
+            //System.out.println(data[i]);
+        //}
+
+
+        //String[] booksBought = database.ReturnBooksBoughtById(1);
+
+        //for (int i = 0; i < booksBought.length; i++){
+            //System.out.printf("books #%d = %s\n", i, booksBought[i]);
+        //}
+
+
+
+        String[] top_3 = database.ReturnTopThreeBooks();
+
+        for (int i = 0; i < top_3.length; i++){
+            System.out.println(top_3[i]);
         }
 
 
-        String[] booksBought = database.ReturnBooksBoughtById(1);
 
-        for (int i = 0; i < booksBought.length; i++){
-            System.out.printf("books #%d = %s\n", i, booksBought[i]);
-        }
+
 
 
 
