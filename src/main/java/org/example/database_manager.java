@@ -269,10 +269,8 @@ public class database_manager {
 
 
 
-
-
     //-------------RETURN ALL-------------//
-    // Return all book data
+    // Return All Book Data
     public void ReturnAllBooks(){
         try (Connection connection = DriverManager.getConnection(this.data_location)) {
             // SQL statement to retrieve all data from the "book_details" table
@@ -315,7 +313,7 @@ public class database_manager {
             e.printStackTrace();
         }
     }
-    // Return all User data
+    // Return All User Data
     public Object[][] ReturnAllUsers(){
         List<Object[]> dataList = new ArrayList<>();
 
@@ -352,8 +350,7 @@ public class database_manager {
         // Convert the list to a 2D array
         return dataList.toArray(new Object[0][0]);
     }
-
-
+    // Return Top 3 Books
     public String[] ReturnTopThreeBooks() {
         String[] topBookIds = new String[3];
         int count = 0;
@@ -568,6 +565,33 @@ public class database_manager {
 
         return booksArray;
     }
+
+
+    //-------------Login System-------------//
+    public int ReturnUserIdByLogIn(String enteredUsername, String enteredPassword) {
+        int userId = -1; // Default value for authentication failure
+
+        try (Connection connection = DriverManager.getConnection(this.data_location)) {
+            String query = "SELECT id FROM user_data WHERE username = ? AND password = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setString(1, enteredUsername);
+                preparedStatement.setString(2, enteredPassword);
+
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        // If a record is found, set the userId to the retrieved ID
+                        userId = resultSet.getInt("id");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return userId;
+    }
+
+
 
 
 

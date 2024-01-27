@@ -32,7 +32,7 @@ public class main {
         //System.out.println(desc);
 
         // Show all books
-        database.ReturnAllBooks();
+        //database.ReturnAllBooks();
 
         // Returns the detail of the book
         //List<Object> book_details = database.ReturnBookDetailsById  (2);
@@ -75,14 +75,14 @@ public class main {
 
 
 
-        String[] top_3 = database.ReturnTopThreeBooks();
+        //String[] top_3 = database.ReturnTopThreeBooks();
 
-        for (int i = 0; i < top_3.length; i++){
-            System.out.println(top_3[i]);
-        }
+        //for (int i = 0; i < top_3.length; i++){
+            //System.out.println(top_3[i]);
+        //}
 
-
-
+        // Returns Id If account in database
+        //System.out.printf("User id = %d", database.ReturnUserIdByLogIn("Jorge", "My password"));
 
 
 
