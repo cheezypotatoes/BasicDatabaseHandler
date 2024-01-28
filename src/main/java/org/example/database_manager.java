@@ -565,6 +565,41 @@ public class database_manager {
 
         return booksArray;
     }
+    // Query Builder
+    public List<Object[]> searchBookUsingQuery(String query) {
+        List<Object[]> result = new ArrayList<>();
+
+        try (Connection connection = DriverManager.getConnection(this.data_location)) {
+            String retrieveDetailsSQL = "SELECT * FROM book_details " + query;
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(retrieveDetailsSQL)) {
+                ResultSet resultSet = preparedStatement.executeQuery();
+
+                while (resultSet.next()) {
+                    Object[] bookDetails = new Object[9];
+                    bookDetails[0] = resultSet.getInt("book_id");
+                    bookDetails[1] = resultSet.getString("title");
+                    bookDetails[2] = returnBookDescriptionById(resultSet.getInt("book_id"));
+                    bookDetails[3] = resultSet.getString("image_link");
+                    bookDetails[4] = resultSet.getString("genre");
+                    bookDetails[5] = resultSet.getInt("author_id");
+                    bookDetails[6] = resultSet.getBoolean("availability");
+                    bookDetails[7] = resultSet.getDouble("book_price");
+                    bookDetails[8] = resultSet.getInt("book_sold");
+
+                    result.add(bookDetails);
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
 
 
     //-------------Login System-------------//
@@ -596,7 +631,13 @@ public class database_manager {
 
 
 
-
-
-
 }
+
+
+
+
+
+
+
+
+
