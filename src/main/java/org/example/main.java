@@ -89,7 +89,7 @@ public class main {
 
 
 
-
+        // Query Builder
         List<Object[]> searchResults = database.searchBookUsingQuery("ORDER BY book_sold DESC LIMIT 3;");
 
         for (Object[] bookDetails : searchResults) {
