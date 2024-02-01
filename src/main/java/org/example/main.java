@@ -1,8 +1,6 @@
 package org.example;
 
 
-import java.util.List;
-
 @SuppressWarnings("ALL")
 public class main {
     public static void main(String[] args) {
@@ -24,7 +22,16 @@ public class main {
         //database.InsertNewUser("jorge1@example.com", "Jorge", "My password", true, 5000, "");
 
         // Returns 2D of user data
-        //Object[][] all_data = database.SeeAllUserData();
+        Object[][] all_data = database.ReturnAllUsers();
+
+        for (int i = 0; i < all_data.length; i++) {
+            // Iterate through each column in the current row
+            for (int j = 0; j < all_data[i].length; j++) {
+                System.out.print(all_data[i][j] + " ");
+            }
+            // Move to the next line after printing each row
+            System.out.println();
+        }
 
         // Insert Book
         //database.InsertNewBook("New Scary book_4444", "sample.jpg", "Comedy,Horror", 1, true, 19.99, 0, "description test 2");
@@ -90,20 +97,27 @@ public class main {
 
 
         // Query Builder
-        List<Object[]> searchResults = database.searchBookUsingQuery("ORDER BY book_sold DESC LIMIT 3;");
+        //List<Object[]> searchResults = database.searchBookUsingQuery("ORDER BY book_sold DESC LIMIT 3;");
 
-        for (Object[] bookDetails : searchResults) {
-            System.out.println("Book ID: " + bookDetails[0]);
-            System.out.println("Title: " + bookDetails[1]);
-            System.out.println("Description: " + bookDetails[2]);
-            System.out.println("Image Link: " + bookDetails[3]);
-            System.out.println("Genre: " + bookDetails[4]);
-            System.out.println("Author ID: " + bookDetails[5]);
-            System.out.println("Availability: " + bookDetails[6]);
-            System.out.println("Book Price: " + bookDetails[7]);
-            System.out.println("Books Sold: " + bookDetails[8]);
-            System.out.println();
-        }
+        //for (Object[] bookDetails : searchResults) {
+        //System.out.println("Book ID: " + bookDetails[0]);
+        //System.out.println("Title: " + bookDetails[1]);
+        //System.out.println("Description: " + bookDetails[2]);
+        //System.out.println("Image Link: " + bookDetails[3]);
+        //System.out.println("Genre: " + bookDetails[4]);
+        //System.out.println("Author ID: " + bookDetails[5]);
+        //System.out.println("Availability: " + bookDetails[6]);
+        //System.out.println("Book Price: " + bookDetails[7]);
+        //System.out.println("Books Sold: " + bookDetails[8]);
+        //System.out.println();
+        //}
+
+        // Check if name exist
+        //System.out.println(database.CheckIfUserNameAlreadyExist("Jorge"));
+
+        // Check if email exist
+        //System.out.println(database.CheckIfEmailAlreadyExist("jorge1@example.com"));
+
 
 
 
