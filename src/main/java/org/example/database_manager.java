@@ -607,13 +607,13 @@ public class database_manager {
 
     //-------------Login System-------------//
     // Check IF username and Password Matches
-    public int ReturnUserIdByLogIn(String enteredUsername, String enteredPassword) {
+    public int ReturnUserIdByLogIn(String enteredEmail, String enteredPassword) {
         int userId = -1; // Default value for authentication failure
 
         try (Connection connection = DriverManager.getConnection(this.data_location)) {
-            String query = "SELECT id FROM user_data WHERE username = ? AND password = ?";
+            String query = "SELECT id FROM user_data WHERE email = ? AND password = ?";
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                preparedStatement.setString(1, enteredUsername);
+                preparedStatement.setString(1, enteredEmail);
                 preparedStatement.setString(2, enteredPassword);
 
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
