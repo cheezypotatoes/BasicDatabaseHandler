@@ -19,19 +19,19 @@ public class main {
         database.CreateTablesIfNoExist();
 
         // Insert User
-        //database.InsertNewUser("jorge1@example.com", "Jorge", "My password", true, 5000, "");
+        //database.InsertNewUser("jorge1@example.com", "Jorge2", "My password", true, 5000, "");
 
         // Returns 2D of user data
-        Object[][] all_data = database.ReturnAllUsers();
+        //Object[][] all_data = database.ReturnAllUsers();
 
-        for (int i = 0; i < all_data.length; i++) {
+        //for (int i = 0; i < all_data.length; i++) {
             // Iterate through each column in the current row
-            for (int j = 0; j < all_data[i].length; j++) {
-                System.out.print(all_data[i][j] + " ");
-            }
+            //for (int j = 0; j < all_data[i].length; j++) {
+                //System.out.print(all_data[i][j] + " ");
+            //}
             // Move to the next line after printing each row
-            System.out.println();
-        }
+            //System.out.println();
+        //}
 
         // Insert Book
         //database.InsertNewBook("New Scary book_4444", "sample.jpg", "Comedy,Horror", 1, true, 19.99, 0, "description test 2");
@@ -117,6 +117,25 @@ public class main {
 
         // Check if email exist
         //System.out.println(database.CheckIfEmailAlreadyExist("jorge1@example.com"));
+
+
+        //System.out.println(database.ReturnIdByUsername("Jorge"));
+
+
+
+        //System.out.println(database.ReturnLatestId());
+
+        // Insert Book With Admin
+        database.AdminBookInserter(
+                "The Great Gatsby",
+                "The Great Gatsby.png",
+                "Fiction",
+                "Jorge",
+                true,
+                19.99,
+                100,
+                "A classic novel about the American Dream."
+        );
 
 
 

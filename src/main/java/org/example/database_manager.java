@@ -248,6 +248,7 @@ public class database_manager {
             e.printStackTrace();
         }
     }
+    // Increase Book Sold By One
     public void IncreaseBookSoldByOne(int bookId) {
         String incrementSoldQuery = "UPDATE book_details SET book_sold = book_sold + 1 WHERE book_id = ?";
 
@@ -601,6 +602,45 @@ public class database_manager {
 
         return result;
     }
+    // Return Id By Username
+    public int ReturnIdByUsername(String username){
+        int userId = -1;
+        try (Connection connection = DriverManager.getConnection(this.data_location)) {
+            String sql = "SELECT id FROM user_data WHERE username = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                preparedStatement.setString(1, username);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        userId = resultSet.getInt("id");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return userId;
+
+    }
+    // Return Latest Id
+    public int ReturnLatestId(){
+        int userId = -1;
+        try (Connection connection = DriverManager.getConnection(this.data_location)) {
+            String sql = "SELECT id FROM user_data ORDER BY id DESC LIMIT 1";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        userId = resultSet.getInt("id");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return userId;
+
+    }
 
 
 
@@ -670,6 +710,32 @@ public class database_manager {
             e.printStackTrace();
         }
         return false;
+    }
+
+
+
+
+    //-------------Admin-------------//
+    // Admin Book Inserter
+    public void AdminBookInserter(String title, String imageLink, String genre, String authorname,
+                                  boolean availability, double bookPrice, int bookSold, String description){
+
+        int author_id;
+
+        if (CheckIfUserNameAlreadyExist(authorname)){
+            author_id = ReturnIdByUsername(authorname);
+            System.out.println("Author already exist name = " + authorname);
+        } else{
+            author_id = ReturnLatestId() + 1;
+            InsertNewUser("DefaultEmail@gmail.com", authorname, "DEFAULT_PASSWORD", false, 0, "");
+            System.out.println("Author Not In Database. Making New User. Name = " + authorname + "Author Id = " + author_id);
+
+
+        }
+
+        InsertNewBook(title, imageLink, genre, author_id, availability, bookPrice, bookSold, description);
+
+
     }
 
 
