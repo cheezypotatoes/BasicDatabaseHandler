@@ -59,12 +59,25 @@ public class database_manager {
                     + "FOREIGN KEY (user_id) REFERENCES user_data (id)"
                     + ");";
 
+            String createReviewTableSQL = "CREATE TABLE IF NOT EXISTS book_reviews ("
+                    + "review_id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                    + "book_id INTEGER,"
+                    + "user_id INTEGER,"
+                    + "rating INTEGER,"
+                    + "review TEXT,"
+                    + "owned BOOLEAN,"
+                    + "FOREIGN KEY (book_id) REFERENCES book_details(book_id),"
+                    + "FOREIGN KEY (user_id) REFERENCES user_data(id)"
+                    + ");";
+
+
 
             // Execute the SQL statement
             statement.execute(CreateUserDataSQL);
             statement.execute(createBookDescriptionSQL);
             statement.execute(createBookDetailsTableSQL);
             statement.execute(createAuthorTableSQL);
+            statement.execute(createReviewTableSQL);
 
             System.out.println("Table created successfully (if not existed)");
 
@@ -161,12 +174,9 @@ public class database_manager {
     }
     // Buy new Book
     public boolean BuyBook(double cost, int user_id, int book_id){
-        String updateQuery = "UPDATE user_data SET balance = ?, books_bought = ? WHERE id = ?";
-
         String[] CurrentUserData = ReturnUserDetailsById(user_id);
 
         Double balance = Double.valueOf(CurrentUserData[5]);
-
 
         if ((balance - cost) < 0) {
             System.out.println("Not Enough");
@@ -267,6 +277,11 @@ public class database_manager {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+    // Create Reviews
+    public void CreateReviews(int book_id, int user_id){
+        // TODO FiNISH IT
+        System.out.println("EMPTY");
     }
 
 
@@ -640,6 +655,23 @@ public class database_manager {
 
         return userId;
 
+    }
+
+
+
+    // Return If Owned
+    public boolean CheckIfOwned(int user_id,String book_name){
+        // TODO: USE A DIFFERENT ONE THAT RETURN STRINGS MAKE A METHOD THAT RUTURNS ALL NAME AS STRING
+        String[] books_bought = ReturnBooksBoughtById(user_id);
+        for (String book_id : books_bought) {
+            List<Object> book_title = ReturnBookDetailsById(Integer.parseInt(book_id));
+            System.out.println(book_title.get(1));
+
+            if (book_title.get(1).equals(book_name)){
+                return true;
+            }
+        }
+        return false;
     }
 
 

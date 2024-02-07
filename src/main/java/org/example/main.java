@@ -64,9 +64,9 @@ public class main {
             //System.out.println(id);
         //}
 
-
+        // TODO: PRICE ADJUST TO DATA
         // Buy books
-        //database.BuyBook(150, 2, 3);
+        //database.BuyBook(150, 1, 2);
 
         // Get specific data of user
         //String[] data = database.ReturnUserDetailsById(1);
@@ -125,20 +125,13 @@ public class main {
 
         //System.out.println(database.ReturnLatestId());
 
-        // Insert Book With Admin
-        database.AdminBookInserter(
-                "The Great Gatsby",
-                "The Great Gatsby.png",
-                "Fiction",
-                "Jorge",
-                true,
-                19.99,
-                100,
-                "A classic novel about the American Dream."
-        );
+        // Insert Book With admin permission
+        //database.AdminBookInserter("The Great Gatsby", "The Great Gatsby.png", "Fiction", "F. Scott Fitzgerald", true, 19.99, 100, "A classic novel about the American Dream.");
+        //database.AdminBookInserter("The Great Gatsby2", "The Great Gatsby.png", "Fiction", "F. Scott Fitzgerald", true, 19.99, 100, "A classic novel about the American Dream.");
 
 
-
+        // Check if book is owned
+        //System.out.println(database.CheckIfOwned(1, "The Great Gatsby"));
 
 
 
