@@ -97,13 +97,12 @@ public class database_manager {
             String insertUserDataSQL = "INSERT INTO user_data (email, username, password, admin, balance, books_bought) VALUES (?, ?, ?, ?, ?, ?);";
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(insertUserDataSQL)) {
-                // Set values for the parameters in the prepared statement
-                preparedStatement.setString(1, email); // Assuming email is the first parameter
-                preparedStatement.setString(2, username); // Assuming username is the second parameter
+                preparedStatement.setString(1, email);
+                preparedStatement.setString(2, username);
                 preparedStatement.setString(3, password);
                 preparedStatement.setBoolean(4, isAdmin);
                 preparedStatement.setDouble(5, balance);
-                preparedStatement.setString(6, booksBought); // Assuming booksBought is the sixth parameter
+                preparedStatement.setString(6, booksBought);
 
                 // Execute the SQL statement to insert data
                 preparedStatement.executeUpdate();
@@ -195,6 +194,30 @@ public class database_manager {
 
 
     }
+    // Insert New Book Review
+    public void InsertNewReview(int book_id, int user_id, int rating, String review){
+        try (Connection connection = DriverManager.getConnection(this.data_location)) {
+            String sql = "INSERT INTO book_reviews (book_id, user_id, rating, review, owned) VALUES (?, ?, ?, ?, ?)";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                preparedStatement.setInt(1, book_id);
+                preparedStatement.setInt(2, user_id);
+                preparedStatement.setInt(3, rating);
+                preparedStatement.setString(4, review);
+                preparedStatement.setBoolean(5, CheckIfOwned(user_id, ReturnBookTitleById(user_id)));
+
+                int rowsInserted = preparedStatement.executeUpdate();
+                if (rowsInserted > 0) {
+                    System.out.println("Review inserted successfully.");
+                } else {
+                    System.out.println("Failed to insert review.");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 
 
 
@@ -279,10 +302,30 @@ public class database_manager {
         }
     }
     // Create Reviews
-    public void CreateReviews(int book_id, int user_id){
-        // TODO FiNISH IT
+    public void CreateReviews(int book_id, int user_id, String Review){
+        // TODO FiNISH IT CHECK IF THE ENTRY FOR YOUR REVIEW ALREADY EXIST
+        // TODO ADD UPDATE IF REVIEW ROW ALREADY EXIST
         System.out.println("EMPTY");
     }
+
+    // TODO: NEED TEST
+    public boolean CheckIfAlreadyReviewed(int book_id, int user_id){
+        try (Connection connection = DriverManager.getConnection(this.data_location)) {
+            String sql = "SELECT * FROM book_reviews WHERE book_id = ? AND user_id = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                preparedStatement.setInt(1, book_id);
+                preparedStatement.setInt(2, user_id);
+
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    return resultSet.next(); // Return true if there is at least one matching row
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false; // Return false in case of any exception
+        }
+    }
+
 
 
 
@@ -656,18 +699,51 @@ public class database_manager {
         return userId;
 
     }
+    // Return String Of All Books Bought By Specific User
+    public List<String> ReturnAllBookBoughtById(int user_id){
+        List<String> book_titles = new ArrayList<String>();
+        String[] books_bought_id = ReturnBooksBoughtById(user_id);
 
+        // Skip if it's emptyu
+        if (!books_bought_id[0].equals("")){
+            for (int i = 0; i < books_bought_id.length; i++){
+                book_titles.add(ReturnBookTitleById(Integer.parseInt(books_bought_id[i])));
+            }
+        }
 
+        return book_titles;
 
-    // Return If Owned
+    }
+    // Return Title Of Specific Book By Its Id
+    public String ReturnBookTitleById(int book_id){
+        String result = null;
+
+        try (Connection connection = DriverManager.getConnection(this.data_location)) {
+            String retrieveDetailsSQL = "SELECT title FROM book_details WHERE book_id = ?;";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(retrieveDetailsSQL)) {
+                preparedStatement.setInt(1, book_id);
+
+                ResultSet resultSet = preparedStatement.executeQuery();
+
+                result = resultSet.getString("title");
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+    // Return If Specific Title Is Onwed By User
     public boolean CheckIfOwned(int user_id,String book_name){
-        // TODO: USE A DIFFERENT ONE THAT RETURN STRINGS MAKE A METHOD THAT RUTURNS ALL NAME AS STRING
-        String[] books_bought = ReturnBooksBoughtById(user_id);
-        for (String book_id : books_bought) {
-            List<Object> book_title = ReturnBookDetailsById(Integer.parseInt(book_id));
-            System.out.println(book_title.get(1));
+        List<String> book_bought = ReturnAllBookBoughtById(user_id);
 
-            if (book_title.get(1).equals(book_name)){
+        for (int i = 0; i < book_bought.size(); i++) {
+
+            if (book_bought.get(i).equals(book_name)){
                 return true;
             }
         }

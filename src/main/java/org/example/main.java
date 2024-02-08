@@ -1,6 +1,7 @@
 package org.example;
 
 
+
 @SuppressWarnings("ALL")
 public class main {
     public static void main(String[] args) {
@@ -19,7 +20,7 @@ public class main {
         database.CreateTablesIfNoExist();
 
         // Insert User
-        //database.InsertNewUser("jorge1@example.com", "Jorge2", "My password", true, 5000, "");
+        //database.InsertNewUser("jorge22@example.com", "Jorge2", "My password", true, 5000, "");
 
         // Returns 2D of user data
         //Object[][] all_data = database.ReturnAllUsers();
@@ -66,7 +67,10 @@ public class main {
 
         // TODO: PRICE ADJUST TO DATA
         // Buy books
-        //database.BuyBook(150, 1, 2);
+        //database.BuyBook(150, 1, 1);
+
+
+
 
         // Get specific data of user
         //String[] data = database.ReturnUserDetailsById(1);
@@ -127,11 +131,20 @@ public class main {
 
         // Insert Book With admin permission
         //database.AdminBookInserter("The Great Gatsby", "The Great Gatsby.png", "Fiction", "F. Scott Fitzgerald", true, 19.99, 100, "A classic novel about the American Dream.");
-        //database.AdminBookInserter("The Great Gatsby2", "The Great Gatsby.png", "Fiction", "F. Scott Fitzgerald", true, 19.99, 100, "A classic novel about the American Dream.");
 
 
         // Check if book is owned
         //System.out.println(database.CheckIfOwned(1, "The Great Gatsby"));
+
+        //List<String> books = database.ReturnAllBookBoughtById(1);
+
+        //for (int i = 0; i < books.size(); i++){
+            //System.out.println(books.get(i));
+        //}
+
+        // TODO: Add update since the insert book is already created
+        // Insert Reviewed book (used in other methods)
+        //database.InsertNewReview(3, 5, 5, "bad");
 
 
 
